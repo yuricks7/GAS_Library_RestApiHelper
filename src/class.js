@@ -106,7 +106,7 @@ class RestApiOperator{
       return JSON.parse(response.getContentText());
 
     } else if (statusCodes.clientError <= responseCode && responseCode < statusCodes.serverError) {
-      console.　info('リクエストの書き方が正しくないかもしれません…');
+      console.info('リクエストの書き方が正しくないかもしれません…');
 
     } else if (statusCodes.serverError <= responseCode) {
       console.info('サーバーが調子悪いかもです…');
