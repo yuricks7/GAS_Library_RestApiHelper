@@ -3,5 +3,8 @@
   "dependencies": {
   },
   "exceptionLogging": "STACKDRIVER",
+  "executionApi": {
+    "access": "DOMAIN"
+  },
   "runtimeVersion": "V8"
 }
