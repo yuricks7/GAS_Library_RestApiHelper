@@ -28,11 +28,14 @@
      * https://github.com/cw-shibuya/chatwork-client-gas/blob/master/client.js
      *
      * @param {string} endpoint リクエストの送信先
+     * @param {object} headers       HTTPリクエストのヘッダー
+     * @param {string} headers.key   ヘッダーの項目
+     * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {string|false} HTTPリクエストの結果
+     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
      */
-    GET(endpoint) {
-      return this._sendRequest(endpoint, 'get');
+    GET(endpoint, headers = this.requestHeaders) {
+      return this._sendRequest(endpoint, 'get', headers);
     }
     
     /**
@@ -46,11 +49,14 @@
      * @param {object} params       ヘッダー以外のパラメータ
      * @param {string} params.key   パラメータの項目
      * @param {string} params.value パラメータの設定値
+     * @param {object} headers       HTTPリクエストのヘッダー
+     * @param {string} headers.key   ヘッダーの項目
+     * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {string|false} HTTPリクエストの結果
+     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
      */
-    POST(endpoint, params) {
-      return this._sendRequest(endpoint, 'post', params);
+    POST(endpoint, params, headers = this.requestHeaders) {
+      return this._sendRequest(endpoint, 'post', params, headers);
     }
     
     /**
@@ -64,47 +70,65 @@
      * @param {object} params       ヘッダー以外のパラメータ
      * @param {string} params.key   パラメータの項目
      * @param {string} params.value パラメータの設定値
+     * @param {object} headers       HTTPリクエストのヘッダー
+     * @param {string} headers.key   ヘッダーの項目
+     * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {string|false} HTTPリクエストの結果
+     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
      */
-    PUT(endpoint, params) {
-      return this._sendRequest(endpoint, 'put', params);
+    PUT(endpoint, params, headers = this.requestHeaders) {
+      return this._sendRequest(endpoint, 'put', params, headers);
     }
     
     /**
-    * HTTPリクエストを送信する
-    *
-    * 【参考】
-    * chatwork-client-gas - cw-shibuya | GitHub
-    * https://github.com/cw-shibuya/chatwork-client-gas/blob/master/client.js
-    *
-    * @param {string} endpoint     エンドポイントURL
-    * @param {string} method       リクエスト・メソッド
-    * @param {object} jsonParams       ヘッダー以外のパラメータ
-    * @param {string} jsonParams.key   パラメータの項目
-    * @param {string} jsonParams.value パラメータの設定値
-    *
-    * @return {string|false} HTTPリクエストの戻り値を解析した結果
-    */
-    _sendRequest(endpoint, method, jsonParams = {}) {
+     * HTTPリクエストを送信する
+     *
+     * 【参考】
+     * chatwork-client-gas - cw-shibuya | GitHub
+     * https://github.com/cw-shibuya/chatwork-client-gas/blob/master/client.js
+     *
+     * @param {string} endpoint     エンドポイントURL
+     * @param {string} method       リクエスト・メソッド
+     * @param {object} jsonParams       ヘッダー以外のパラメータ
+     * @param {string} jsonParams.key   パラメータの項目
+     * @param {string} jsonParams.value パラメータの設定値
+     * @param {object} headers       HTTPリクエストのヘッダー
+     * @param {string} headers.key   ヘッダーの項目
+     * @param {string} headers.value ヘッダーの設定値
+     *
+     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
+     */
+    _sendRequest(endpoint, method, jsonParams = {}, headers = this.requestHeaders) {
       
       if (Object.keys(jsonParams).length === 0) {
         jsonParams = {"":""};
       }
-      
+
       const options = {
-        method            : method,
-        headers           : this.requestHeaders,
-        payload           : jsonParams,
+        method : method,
+        headers: headers,
+        payload: jsonParams,
         muteHttpExceptions: true,
+        // muteHttpExceptions: false, // エラーの詳細を見たい時だけ！
       };
-      
-      const response     = UrlFetchApp.fetch(endpoint, options);
-      const responseCode = response.getResponseCode();
-      
-      // リクエストに成功していたら結果を解析して返す
-      if (this._isSuccessful(responseCode)) return JSON.parse(response.getContentText());
-      return false;
+
+      try {
+        const response     = UrlFetchApp.fetch(endpoint, options);
+        const responseCode = response.getResponseCode();
+
+        // Slackの画像投稿用（レスポンスとして`OK - xxxxxx`形式で返ってくることがあるため）
+        if(response.toString().includes('OK - ')) return true;
+
+        // リクエストに成功していたら結果を解析して返す
+        const parsedJson = JSON.parse(response.getContentText());
+        if (this._isSuccessful(responseCode)) return parsedJson; // 正常な戻り値
+        return false;
+
+      } catch(e) {
+        // 例外エラー処理
+        console.error(`【HTTPリクエストに失敗しました】\n${e.stack}`);
+        return false
+      }
     }
     
     /**
