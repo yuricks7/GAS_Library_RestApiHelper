@@ -139,21 +139,32 @@
     * @return {boolean} リクエストの成否
     */
     _isSuccessful(responseCode) {
-      const statusJunctions = {
+      const statusCodes = {
         succeed    : 200,
         clientError: 400,
         serverError: 500,
       }
       
-      if (responseCode === statusJunctions.succeed) return true;
+      if (responseCode === statusCodes.succeed) return true;
       
       let m = '';
-      if (statusJunctions.clientError <= responseCode && responseCode < statusJunctions.serverError) {
+      if (statusCodes.clientError <= responseCode && responseCode < statusCodes.serverError) {
+        let errorMessage = '';
+        switch (responseCode) {
+          case 429:
+            errorMessage += 'リクエストのサイズが大きすぎて、サーバーに拒否されています。\n';
+            errorMessage += '余裕があれば「Retry-After ヘッダー」を確認してください。';
+            break;
+
+          default:
+            errorMessage += 'リクエストの書き方が正しくないかもしれません…';
+        }
+
         m += `【HTTPレスポンスコード】${responseCode}\n`;
-        m += 'リクエストの書き方が正しくないかもしれません…';
+        m += errorMessage;
         console.error(m);
         
-      } else if (statusJunctions.serverError <= responseCode) {
+      } else if (statusCodes.serverError <= responseCode) {
         m += `【HTTPレスポンスコード】${responseCode}\n`;
         m += 'サーバーが調子悪いかもです…しばらくお待ち下さい…';
         console.error(m);
