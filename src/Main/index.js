@@ -33,7 +33,7 @@ function load(headers) {
  *
  * @param {string} endpoint リクエストの送信先
  *
- * @return {string|false} HTTPリクエストの結果
+ * @return {{} | false} HTTPリクエストの戻り値をparseした結果
  */
 function GET() {
   throw new Error('loadメソッドを呼び出してから呼び出してください。');
@@ -51,7 +51,7 @@ function GET() {
  * @param {string} params.key   パラメータの項目
  * @param {string} params.value パラメータの設定値
  *
- * @return {string|false} HTTPリクエストの結果
+ * @return {{} | false} HTTPリクエストの戻り値をparseした結果
  */
 function POST() {
   throw new Error('loadメソッドを呼び出してから呼び出してください。');
@@ -69,7 +69,7 @@ function POST() {
  * @param {string} params.key   パラメータの項目
  * @param {string} params.value パラメータの設定値
  *
- * @return {string|false} HTTPリクエストの結果
+ * @return {{} | false} HTTPリクエストの戻り値をparseした結果
  */
 function PUT() {
   throw new Error('loadメソッドを呼び出してから呼び出してください。');

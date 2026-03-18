@@ -32,7 +32,7 @@
      * @param {string} headers.key   ヘッダーの項目
      * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
+     * @return {{} | false} HTTPリクエストの戻り値をparseした結果
      */
     GET(endpoint, headers = this.requestHeaders) {
       return this._sendRequest(endpoint, 'get', headers);
@@ -53,7 +53,7 @@
      * @param {string} headers.key   ヘッダーの項目
      * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
+     * @return {{} | false} HTTPリクエストの戻り値をparseした結果
      */
     POST(endpoint, params, headers = this.requestHeaders) {
       return this._sendRequest(endpoint, 'post', params, headers);
@@ -74,7 +74,7 @@
      * @param {string} headers.key   ヘッダーの項目
      * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
+     * @return {{} | false} HTTPリクエストの戻り値をparseした結果
      */
     PUT(endpoint, params, headers = this.requestHeaders) {
       return this._sendRequest(endpoint, 'put', params, headers);
@@ -96,7 +96,7 @@
      * @param {string} headers.key   ヘッダーの項目
      * @param {string} headers.value ヘッダーの設定値
      *
-     * @return {{} | false} HTTPリクエストの戻り値を解析した結果
+     * @return {{} | false} HTTPリクエストの戻り値をparseした結果
      */
     _sendRequest(endpoint, method, jsonParams = {}, headers = this.requestHeaders) {
       
